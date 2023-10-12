@@ -108,22 +108,22 @@ final class ShopDomain implements ShopDomainValue
      *
      * @return string
      */
-    protected function sanitizeShopDomain(string $domain): string
+    protected function sanitizeShopDomain(string $domain): ?string
     {
         $configEndDomain = Util::getShopifyConfig('myshopify_domain');
-        $domain = strtolower(preg_replace('/^https?:\/\//i', '', trim($domain)));
-
-        if (strpos($domain, $configEndDomain) === false && strpos($domain, '.') === false) {
+        $adminDomain = "admin.shopify.com";
+        
+        $domain = strtolower(preg_replace('/https?:\/\//i', '', trim($domain)));
+    
+        if (strpos($domain, $adminDomain) !== false) {
+            // It's an admin domain, so don't append anything
+            return parse_url("https://{$domain}", PHP_URL_HOST);
+        } elseif (strpos($domain, $configEndDomain) === false && strpos($domain, '.') === false) {
             // No myshopify.com ($configEndDomain) in shop's name
             $domain .= ".{$configEndDomain}";
         }
-
-        $hostname = parse_url("https://{$domain}", PHP_URL_HOST);
-
-        if (! preg_match('/^[a-zA-Z0-9][a-zA-Z0-9\-]*\.'.preg_quote($configEndDomain, '/').'$/', $hostname)) {
-            return '';
-        }
-
-        return $hostname;
+    
+        // Return the host after cleaned up
+        return parse_url("https://{$domain}", PHP_URL_HOST);
     }
 }
