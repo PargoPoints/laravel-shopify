@@ -1,5 +1,5 @@
 {
-    "name": "PargoPoints/laravel-shopify",
+    "name": "pargo-points/laravel-shopify",
     "description": "Shopify package for Laravel to aide in app development",
     "keywords": [
         "api",
